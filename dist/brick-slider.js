@@ -93,10 +93,11 @@
   }
 
   function onDragStart(brickSlider, x, y) {
-    brickSlider.ns.dragInitialValue = brickSlider.value;
+    // brickSlider.ns.dragInitialValue = brickSlider.value;
     handleChange(brickSlider, x, y);
 
-    brickSlider.thumb.setAttribute('active','');
+    brickSlider.focus();
+    brickSlider.setAttribute('active','');
 
     var mouseMoveListener = function (e) {
       handleChange(brickSlider, e.clientX, e.clientY);
@@ -109,7 +110,7 @@
       document.removeEventListener('mousemove', mouseMoveListener);
       document.removeEventListener('touchmove', touchMoveListener);
       document.removeEventListener('mouseup', pointerUpListener);
-      brickSlider.thumb.removeAttribute('active');
+      brickSlider.removeAttribute('active');
     };
     document.addEventListener('mousemove', mouseMoveListener);
     document.addEventListener('touchmove', touchMoveListener);
@@ -133,7 +134,7 @@
       var percentage = (100 * newHandleX / sliderWidth) + '%';
 
       brickSlider.thumb.style.left = percentage;
-      brickSlider.range.style.width = value + "%";
+      brickSlider.range.style.width = fraction*100 + "%";
       brickSlider.ns.reqFrame = null;
     });
 
@@ -215,7 +216,6 @@
         }
         if (this.value !== oldVal) {
           redraw(brickSlider);
-          // todo: event
         }
         e.preventDefault();
       }
@@ -223,14 +223,24 @@
     addListener(brickSlider.listeners, brickSlider, 'keydown', keydown);
 
     var focus = function () {
-      brickSlider.thumb.setAttribute('active', true);
+      //brickSlider.setAttribute('active', true);
+      brickSlider.ns.startFocusValue = brickSlider.value;
     };
-    addListener(brickSlider.listeners, brickSlider.thumb, 'focus', focus);
+    addListener(brickSlider.listeners, brickSlider, 'focus', focus);
 
     var blur = function () {
-      brickSlider.thumb.removeAttribute('active', true);
+      if (brickSlider.ns.startFocusValue !== brickSlider.value) {
+        var event = document.createEvent('HTMLEvents');
+        event.initEvent('change', false, true);
+        this.dispatchEvent(event);
+      }
     };
-    addListener(brickSlider.listeners, brickSlider.thumb, 'blur', blur);
+    addListener(brickSlider.listeners, brickSlider, 'blur', blur);
+
+    var click = function () {
+      brickSlider.thumb.focus();
+    };
+    addListener(brickSlider.listeners, brickSlider, 'click', click);
   }
 
   function cleanupListeners(brickSlider) {
@@ -263,7 +273,10 @@
     // get the input
     brickSlider.input = document.createElement('input');
     brickSlider.input.setAttribute('type','range');
-    copyAttributes(brickSlider,brickSlider.input,['label','type']);
+    copyAttributes(brickSlider,brickSlider.input,['type']);
+    if (brickSlider.hasAttribute('value')) {
+      brickSlider.input.value = brickSlider.getAttribute('value');
+    }
     brickSlider.input.style.display = 'none';
     brickSlider.appendChild(brickSlider.input);
 
@@ -274,8 +287,9 @@
     setupListeners(brickSlider);
 
     // make the brickSlider thumb tabfocusable instead of the underlying input
-    this.thumb.setAttribute('tabindex','0');
+    this.setAttribute('tabindex','0');
     this.input.setAttribute('tabindex','-1');
+
     // draw the slider to have it match the current value
     redraw(brickSlider);
   };
@@ -307,6 +321,9 @@
       },
       set: function (newVal) {
         this.input.value = newVal;
+        var event = document.createEvent('HTMLEvents');
+        event.initEvent('input', false, true);
+        this.dispatchEvent(event);
       }
     },
     'min': {

@@ -20,11 +20,36 @@
   <body>
 
     <!-- Using Custom Element -->
-    <brick-slider label="Range Slider" min="0" max="100" value="25" step="1" name="slider"></brick-slider>
+    <brick-slider label="Range Slider" min="100" max="200" value="140" step="5" name="slider" id="slider"></brick-slider>
 
     <br>
 
-    <input type="range" min="0" max="100" step="1" style="width: 100%">
+    <input type="range" id="range" value="" name="range">
 
+    <script>
+      // document.addEventListener('WebComponentsReady', function () {
+      //   window.slider = document.querySelector('#slider');
+      //   window.hiddenInput = document.querySelector('#slider > input');
+      //   window.range = document.querySelector('#range');
+      //
+      //   slider.addEventListener('input', function (e) {
+      //     console.log('slider input',e);
+      //   });
+      //   hiddenInput.addEventListener('input', function (e) {
+      //     console.log('hiddenInput input',e);
+      //   });
+      //   range.addEventListener('input', function (e) {
+      //     console.log('range input',e);
+      //   });
+      //
+      //   slider.addEventListener('change', function (e) {
+      //     console.log('slider change',e);
+      //   });
+      //   range.addEventListener('change', function (e) {
+      //     console.log('range change',e);
+      //   });
+      //
+      // });
+    </script>
   </body>
 </html>
