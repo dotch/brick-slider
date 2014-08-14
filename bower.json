@@ -1,0 +1,27 @@
+{
+  "name": "brick-slider",
+  "version": "0.0.0",
+  "homepage": "https://github.com/mozbrick/brick-slider",
+  "authors": [
+    "mozilla"
+  ],
+  "description": "A Brick slider",
+  "main": "dist/brick-slider.html",
+  "keywords": [
+    "brick",
+    "webcomponents"
+  ],
+  "license": "ISC",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "brick-common": "*",
+    "platform": "Polymer/platform",
+    "pointerevents-polyfill": "~0.2.0"
+  }
+}

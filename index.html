@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+    <title>brick-slider</title>
+
+    <!-- Importing Polyfill -->
+    <script src="bower_components/platform/platform.js"></script>
+
+    <!-- Importing Custom Elemenent -->
+    <link rel="import" href="dist/brick-slider.local.html">
+    <style>
+      body {
+        height: 1000px;
+        padding: 50px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Using Custom Element -->
+    <brick-slider label="Range Slider" min="0" max="100" value="25" step="1" name="slider"></brick-slider>
+
+    <br>
+
+    <input type="range" min="0" max="100" step="1" style="width: 100%">
+
+  </body>
+</html>

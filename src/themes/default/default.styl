@@ -1,0 +1,60 @@
+@import '../../../bower_components/brick-common/styles/mixins'
+@import '../../../bower_components/brick-common/styles/params'
+@import '../../../bower_components/brick-common/styles/themes/default/params'
+
+$input-text-color = #909CA7;
+$border-color = #D6D6D6;
+$dim-small = .825em;
+
+:host {
+  display: block;
+  position: relative;
+  cursor: pointer;
+  .input-range-thumb {
+    width: 34px;
+    height: 34px;
+    border-radius: 17px;
+    background: none repeat scroll 0% 0% #FFF;
+    box-sizing: border-box;
+    border: 1px solid black;
+    position: relative;
+    z-index: 100;
+    left: 50%;
+    transition: box-shadow 0.2s;
+    transition-delay: 0.2s;
+    &:after {
+      box-sizing: border-box;
+      content: " ";
+      position: absolute;
+      width: 250%;
+      height: 250%;
+      top: -75%;
+      left: -75%;
+      border-radius: 50%;
+      border: 23px solid black;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0s;
+    }
+    &[active]:after {
+      opacity: 0.2;
+      transform: scale(1);
+    }
+    &[active] {
+      box-shadow: 0 0 0 2px black; /* does't look good! */
+      transition: none;
+    }
+  }
+  .input-range-track {
+    width: 100%;
+    top: calc(50% - 1.5px);
+    left: 0px;
+    position: absolute;
+    height: 3px;
+    background: grey;
+  }
+  .input-range-range {
+    background: black;
+    width: 50%;
+  }
+}
