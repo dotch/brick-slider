@@ -93,7 +93,6 @@
   }
 
   function onDragStart(brickSlider, x, y) {
-    // brickSlider.ns.dragInitialValue = brickSlider.value;
     handleChange(brickSlider, x, y);
 
     brickSlider.focus();
@@ -223,7 +222,6 @@
     addListener(brickSlider.listeners, brickSlider, 'keydown', keydown);
 
     var focus = function () {
-      //brickSlider.setAttribute('active', true);
       brickSlider.ns.startFocusValue = brickSlider.value;
     };
     addListener(brickSlider.listeners, brickSlider, 'focus', focus);
@@ -236,11 +234,6 @@
       }
     };
     addListener(brickSlider.listeners, brickSlider, 'blur', blur);
-
-    var click = function () {
-      brickSlider.thumb.focus();
-    };
-    addListener(brickSlider.listeners, brickSlider, 'click', click);
   }
 
   function cleanupListeners(brickSlider) {
