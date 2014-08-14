@@ -54,15 +54,15 @@
   }
 
   function constrainToSteppedRange (value, min, max, step) {
-      if (value < min) {
-          return min;
-      } else if (value > max) {
-          // return the largest number that is a multiple of step away from
-          // the range start, but is still under the max
-          return Math.max(min, roundToStep(max, step, min, Math.floor));
-      } else {
-          return value;
-      }
+    if (value < min) {
+      return min;
+    } else if (value > max) {
+      // return the largest number that is a multiple of step away from
+      // the range start, but is still under the max
+      return Math.max(min, roundToStep(max, step, min, Math.floor));
+    } else {
+      return value;
+    }
   }
 
   function fractionToCorrectedVal(brickSlider, sliderFraction) {
@@ -139,25 +139,38 @@
 
   }
 
+  function addListener(arr, el, event, handler, capture) {
+    el.addEventListener(event, handler, capture);
+    arr.push([el, event, handler, capture]);
+  }
+  function removeListener(el, event, handler, capture) {
+    el.removeEventListener(event, handler, capture);
+  }
+
   function  setupListeners(brickSlider) {
 
+    brickSlider.listeners = [];
+
     // listen for initial mousedown or touchstart
-    brickSlider.addEventListener('mousedown', function (e) {
+    var mousedown = function (e) {
       // return if it was not a left mouse button click
       if (e.button !== 0) {
         return;
       }
       onDragStart(brickSlider, e.clientX, e.clientY);
       e.preventDefault();
-    });
-    brickSlider.addEventListener('touchstart', function (e) {
+    };
+    addListener(brickSlider.listeners, brickSlider, 'mousedown', mousedown);
+
+    var touchstart = function (e) {
       var touch = e.touches[0];
       onDragStart(brickSlider, touch.pageX, touch.pageY);
       e.preventDefault();
-    });
+    };
+    addListener(brickSlider.listeners, brickSlider, 'touchstart', touchstart);
 
     // make brickSlider keyboard accesible
-    function keyDownListener (e) {
+    var keydown = function (e) {
       var keyCode = e.keyCode;
       var keyCodes = {
         33: "PAGE_UP",
@@ -206,17 +219,35 @@
         }
         e.preventDefault();
       }
-    }
+    };
+    addListener(brickSlider.listeners, brickSlider, 'keydown', keydown);
 
-    brickSlider.addEventListener('keydown', keyDownListener);
+    var focus = function () {
+      brickSlider.thumb.setAttribute('active', true);
+    };
+    addListener(brickSlider.listeners, brickSlider.thumb, 'focus', focus);
+
+    var blur = function () {
+      brickSlider.thumb.removeAttribute('active', true);
+    };
+    addListener(brickSlider.listeners, brickSlider.thumb, 'blur', blur);
+  }
+
+  function cleanupListeners(brickSlider) {
+    while(brickSlider.listeners.length) {
+      removeListener.apply(this, this.listeners.shift());
+    }
   }
 
   var BrickSliderElementPrototype = Object.create(HTMLElement.prototype);
 
   BrickSliderElementPrototype.createdCallback = function () {
+    this.ns = {};
+  };
+
+  BrickSliderElementPrototype.attachedCallback = function () {
 
     var brickSlider = this;
-    brickSlider.ns = {};
 
     // import template
     var importDoc = currentScript.ownerDocument;
@@ -249,12 +280,8 @@
     redraw(brickSlider);
   };
 
-  BrickSliderElementPrototype.attachedCallback = function () {
-
-  };
-
   BrickSliderElementPrototype.detachedCallback = function () {
-
+    cleanupListeners(this);
   };
 
   BrickSliderElementPrototype.attributeChangedCallback = function (attr, oldVal, newVal) {
@@ -309,7 +336,6 @@
   });
 
   // Register the element
-
   window.BrickSliderElement = document.registerElement('brick-slider', {
     prototype: BrickSliderElementPrototype
   });

@@ -38,6 +38,9 @@
   transform: scale(0.5);
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0s;
 }
+:host .input-range-thumb:focus {
+  outline: none;
+}
 :host .input-range-thumb[active]:after {
   opacity: 0.2;
   transform: scale(1);
