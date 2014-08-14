@@ -139,6 +139,78 @@
 
   }
 
+  function  setupListeners(brickSlider) {
+
+    // listen for initial mousedown or touchstart
+    brickSlider.addEventListener('mousedown', function (e) {
+      // return if it was not a left mouse button click
+      if (e.button !== 0) {
+        return;
+      }
+      onDragStart(brickSlider, e.clientX, e.clientY);
+      e.preventDefault();
+    });
+    brickSlider.addEventListener('touchstart', function (e) {
+      var touch = e.touches[0];
+      onDragStart(brickSlider, touch.pageX, touch.pageY);
+      e.preventDefault();
+    });
+
+    // make brickSlider keyboard accesible
+    function keyDownListener (e) {
+      var keyCode = e.keyCode;
+      var keyCodes = {
+        33: "PAGE_UP",
+        34: "PAGE_DOWN",
+        35: "END",
+        36: "HOME",
+        37: "LEFT_ARROW",
+        38: "UP_ARROW",
+        39: "RIGHT_ARROW",
+        40: "DOWN_ARROW"
+      };
+      if (keyCode in keyCodes) {
+        var oldVal = this.value;
+        var min = this.min;
+        var max = this.max;
+        var step = this.step;
+        var rangeSize = Math.max(0, max - min);
+        var largeStep = Math.max(rangeSize / 10, step);
+        switch (keyCodes[keyCode]) {
+          case "LEFT_ARROW":
+          case "DOWN_ARROW":
+            this.value = Math.max(oldVal - step, min);
+            break;
+          case "RIGHT_ARROW":
+          case "UP_ARROW":
+            this.value = Math.min(oldVal + step, max);
+            break;
+          case "HOME":
+            this.value = min;
+            break;
+          case "END":
+            this.value = max;
+            break;
+          case "PAGE_DOWN":
+            this.value = Math.max(oldVal - largeStep, min);
+            break;
+          case "PAGE_UP":
+            this.value = Math.min(oldVal + largeStep, max);
+            break;
+          default:
+            break;
+        }
+        if (this.value !== oldVal) {
+          redraw(brickSlider);
+          // todo: event
+        }
+        e.preventDefault();
+      }
+    }
+
+    brickSlider.addEventListener('keydown', keyDownListener);
+  }
+
   var BrickSliderElementPrototype = Object.create(HTMLElement.prototype);
 
   BrickSliderElementPrototype.createdCallback = function () {
@@ -167,21 +239,12 @@
     // the thumb and the range element
     brickSlider.thumb = shadowRoot.querySelector('.input-range-thumb');
     brickSlider.range = shadowRoot.querySelector('.input-range-range');
-    // listen for initial mousedown or touchstart
-    brickSlider.addEventListener('mousedown', function (e) {
-      // return if it was not a left mouse button click
-      if (e.button !== 0) {
-        return;
-      }
-      onDragStart(brickSlider, e.clientX, e.clientY);
-      e.preventDefault();
-    });
-    brickSlider.addEventListener('touchstart', function (e) {
-      var touch = e.touches[0];
-      onDragStart(brickSlider, touch.pageX, touch.pageY);
-      e.preventDefault();
-    });
 
+    setupListeners(brickSlider);
+
+    // make the brickSlider thumb tabfocusable instead of the underlying input
+    this.thumb.setAttribute('tabindex','0');
+    this.input.setAttribute('tabindex','-1');
     // draw the slider to have it match the current value
     redraw(brickSlider);
   };
